@@ -1,5 +1,11 @@
 package com.fudn.product_service.dto;
 
-public class ProductResponse {
+import java.math.BigDecimal;
 
+public record ProductResponse(
+        String id,
+        String name,
+        String description,
+        BigDecimal price
+) {
 }
