@@ -62,11 +62,22 @@ public class ProductService {
     //   - Đừng tạo Product mới — phải update đúng record cũ để không bị tạo id khác
     // ==========================================================
     public ProductResponse updateProduct(String id, ProductRequest productRequest) {
-        // TODO: viết logic update tại đây
+    Product product = productRepository.findById(id)
+            .orElseThrow(() -> new ProductNotFoundException(id));
 
-        throw new UnsupportedOperationException(
-                "TODO: Sinh vien chua implement updateProduct()");
-    }
+    product.setName(productRequest.getName());
+    product.setDescription(productRequest.getDescription());
+    product.setPrice(productRequest.getPrice());
+
+    productRepository.save(product);
+
+    return new ProductResponse(
+            product.getId(),
+            product.getName(),
+            product.getDescription(),
+            product.getPrice()
+    );
+}
 
     // ==========================================================
     // TODO 2 — Hoàn thiện method deleteProduct
