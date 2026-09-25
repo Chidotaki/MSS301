@@ -1,5 +1,6 @@
 package com.fudn.order_service;
 
+import com.fudn.order_service.stub.InventoryStubs;
 import io.restassured.RestAssured;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -7,11 +8,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.wiremock.spring.EnableWireMock;
 import org.testcontainers.containers.MySQLContainer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@EnableWireMock
 class OrderServiceApplicationTests {
 
     @ServiceConnection
@@ -33,13 +36,16 @@ class OrderServiceApplicationTests {
 
     @Test
     void shouldSubmitOrder() {
+
         String submitOrderJson = """
                 {
-                  "skuCode": "iphone_15",
-                  "price": 1000,
-                  "quantity": 1
+                    "skuCode": "iphone_15",
+                    "price": 1000,
+                    "quantity": 1
                 }
                 """;
+
+        InventoryStubs.stubInventoryCall("iphone_15", 1);
 
         var responseBodyString = RestAssured.given()
                 .contentType("application/json")
