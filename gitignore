@@ -7,6 +7,7 @@
 *.war
 *.ear
 
+
 # =========================
 # IntelliJ IDEA
 # =========================
@@ -16,11 +17,13 @@
 *.ipr
 *.iws
 
+
 # =========================
 # VS Code
 # =========================
 .vscode/
 **/.vscode/
+
 
 # =========================
 # Logs
@@ -29,6 +32,7 @@
 logs/
 **/logs/
 
+
 # =========================
 # Environment files
 # =========================
@@ -36,10 +40,13 @@ logs/
 .env.*
 !.env.example
 
+
 # =========================
-# Docker runtime data
+# Docker runtime / database data
 # =========================
 **/docker/mysql/data/
+**/docker/mongodb/data/
+
 
 # =========================
 # Operating System
@@ -48,6 +55,7 @@ logs/
 Thumbs.db
 Desktop.ini
 
+
 # =========================
 # Temporary files
 # =========================
@@ -55,17 +63,3 @@ Desktop.ini
 *.temp
 *.swp
 *.swo
-
-# Docker database runtime data
-**/docker/mysql/data/
-**/docker/mongodb/data/
-
-# Maven
-**/target/
-
-# IDE
-.idea/
-*.iml
-
-# Logs
-*.log
