@@ -55,3 +55,17 @@ Desktop.ini
 *.temp
 *.swp
 *.swo
+
+# Docker database runtime data
+**/docker/mysql/data/
+**/docker/mongodb/data/
+
+# Maven
+**/target/
+
+# IDE
+.idea/
+*.iml
+
+# Logs
+*.log
