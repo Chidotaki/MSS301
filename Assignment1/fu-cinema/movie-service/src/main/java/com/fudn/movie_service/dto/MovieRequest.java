@@ -1,0 +1,43 @@
+package com.fudn.movie_service.dto;
+
+import com.fudn.movie_service.model.AgeRating;
+import com.fudn.movie_service.model.MovieStatus;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+import java.time.LocalDate;
+
+public record MovieRequest(
+        @NotBlank(message = "Title is required")
+        @Size(max = 200)
+        String title,
+
+        @Size(max = 2000)
+        String description,
+
+        @Size(max = 100)
+        String director,
+
+        @NotNull(message = "Duration is required")
+        @Min(value = 30, message = "Duration must be 30-300 minutes")
+        @Max(value = 300, message = "Duration must be 30-300 minutes")
+        Integer durationMinutes,
+
+        @Size(max = 50)
+        String language,
+
+        @NotNull(message = "Age rating is required")
+        AgeRating ageRating,
+
+        LocalDate releaseDate,
+
+        @NotBlank(message = "Genre id is required")
+        String genreId,
+
+        @NotNull(message = "Movie status is required")
+        MovieStatus movieStatus
+) {
+}
