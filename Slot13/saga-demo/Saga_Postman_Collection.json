@@ -1,0 +1,1164 @@
+{
+  "info": {
+    "_postman_id": "5d8f5b5d-0a2f-4f61-9b2a-3df8e17f3011",
+    "name": "MSS301 - Saga Demo (Spring Boot 4.1.1)",
+    "description": "Run: 0 -> KB1 -> KB2 -> KB3 -> KB4 -> KB5 -> KB7. Skip manual folder in Runner.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "orderUrl",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "inventoryUrl",
+      "value": "http://localhost:8082"
+    },
+    {
+      "key": "paymentUrl",
+      "value": "http://localhost:8083"
+    },
+    {
+      "key": "kb1OrderId",
+      "value": ""
+    },
+    {
+      "key": "kb2OrderId",
+      "value": ""
+    },
+    {
+      "key": "kb3OrderId",
+      "value": ""
+    },
+    {
+      "key": "kb4OrderId",
+      "value": ""
+    },
+    {
+      "key": "kb5OrderId",
+      "value": ""
+    },
+    {
+      "key": "kb6OrderId",
+      "value": ""
+    },
+    {
+      "key": "stock_P1",
+      "value": ""
+    },
+    {
+      "key": "stock_P2",
+      "value": ""
+    },
+    {
+      "key": "bal_C1",
+      "value": ""
+    },
+    {
+      "key": "bal_C2",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "0 - Kiểm tra service",
+      "item": [
+        {
+          "name": "0.1 Inventory products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{inventoryUrl}}/api/inventory/products"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "0.2 Payment wallets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{paymentUrl}}/api/payments/wallets"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "0.3 Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{orderUrl}}/api/orders"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "KB1 - Happy path",
+      "item": [
+        {
+          "name": "[KB1] 1. Snapshot kho & ví",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{inventoryUrl}}/api/inventory/products"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.response.json().forEach(p => pm.collectionVariables.set(\"stock_\" + p.id, p.stock));",
+                  "pm.sendRequest(pm.collectionVariables.get(\"paymentUrl\") + \"/api/payments/wallets\", (err, res) => {",
+                  "  pm.test(\"Đọc được số dư ví\", () => pm.expect(err).to.be.null);",
+                  "  if (!err) res.json().forEach(w => pm.collectionVariables.set(\"bal_\" + w.customerId, w.balance));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[KB1] 2. Đặt hàng",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{orderUrl}}/api/orders",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"C1\",\n  \"productId\": \"P1\",\n  \"quantity\": 2,\n  \"amount\": 2000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "const o = pm.response.json();",
+                  "pm.collectionVariables.set(\"kb1OrderId\", o.id);",
+                  "pm.test(\"Order status = CONFIRMED\", () => pm.expect(o.status).to.eql(\"CONFIRMED\"));",
+                  "pm.test(\"Saga status = COMPLETED\", () => pm.expect(o.sagaStatus).to.eql(\"COMPLETED\"));",
+                  "pm.test(\"failureReason = null\", () => pm.expect(o.failureReason).to.be.null);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[KB1] 3. Kiểm tra kho & ví",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{inventoryUrl}}/api/inventory/products"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "const expectStock = {\"P1\": -2};",
+                  "const expectBal = {\"C1\": -2000};",
+                  "pm.response.json().forEach(p => {",
+                  "  if (p.id in expectStock) {",
+                  "    const before = Number(pm.collectionVariables.get(\"stock_\" + p.id));",
+                  "    pm.test(`Tồn kho ${p.id} đúng`, () => pm.expect(p.stock).to.eql(before + expectStock[p.id]));",
+                  "  }",
+                  "});",
+                  "pm.sendRequest(pm.collectionVariables.get(\"paymentUrl\") + \"/api/payments/wallets\", (err, res) => {",
+                  "  pm.test(\"Đọc được số dư ví\", () => pm.expect(err).to.be.null);",
+                  "  if (!err) res.json().forEach(w => {",
+                  "    if (w.customerId in expectBal) {",
+                  "      const before = Number(pm.collectionVariables.get(\"bal_\" + w.customerId));",
+                  "      pm.test(`Số dư ${w.customerId} đúng`, () => pm.expect(w.balance).to.eql(before + expectBal[w.customerId]));",
+                  "    }",
+                  "  });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[KB1] 4. Saga logs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{orderUrl}}/api/orders/{{kb1OrderId}}/saga-logs"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "const steps = pm.response.json().map(x => x.step);",
+                  "pm.test(\"Thứ tự bước Saga đúng\", () => pm.expect(steps).to.eql([\"CREATE_ORDER\", \"RESERVE_INVENTORY\", \"PROCESS_PAYMENT\", \"CONFIRM_ORDER\"]));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "KB2 - Thanh toán thất bại (402)",
+      "item": [
+        {
+          "name": "[KB2] 1. Snapshot kho & ví",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{inventoryUrl}}/api/inventory/products"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.response.json().forEach(p => pm.collectionVariables.set(\"stock_\" + p.id, p.stock));",
+                  "pm.sendRequest(pm.collectionVariables.get(\"paymentUrl\") + \"/api/payments/wallets\", (err, res) => {",
+                  "  pm.test(\"Đọc được số dư ví\", () => pm.expect(err).to.be.null);",
+                  "  if (!err) res.json().forEach(w => pm.collectionVariables.set(\"bal_\" + w.customerId, w.balance));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[KB2] 2. Đặt hàng",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{orderUrl}}/api/orders",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"C2\",\n  \"productId\": \"P1\",\n  \"quantity\": 1,\n  \"amount\": 1000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "const o = pm.response.json();",
+                  "pm.collectionVariables.set(\"kb2OrderId\", o.id);",
+                  "pm.test(\"Order status = CANCELLED\", () => pm.expect(o.status).to.eql(\"CANCELLED\"));",
+                  "pm.test(\"Saga status = COMPENSATED\", () => pm.expect(o.sagaStatus).to.eql(\"COMPENSATED\"));",
+                  "pm.test(\"failureReason đúng\", () => pm.expect(o.failureReason).to.match(/^402/));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[KB2] 3. Kiểm tra kho & ví",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{inventoryUrl}}/api/inventory/products"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "const expectStock = {\"P1\": 0};",
+                  "const expectBal = {\"C2\": 0};",
+                  "pm.response.json().forEach(p => {",
+                  "  if (p.id in expectStock) {",
+                  "    const before = Number(pm.collectionVariables.get(\"stock_\" + p.id));",
+                  "    pm.test(`Tồn kho ${p.id} đúng`, () => pm.expect(p.stock).to.eql(before + expectStock[p.id]));",
+                  "  }",
+                  "});",
+                  "pm.sendRequest(pm.collectionVariables.get(\"paymentUrl\") + \"/api/payments/wallets\", (err, res) => {",
+                  "  pm.test(\"Đọc được số dư ví\", () => pm.expect(err).to.be.null);",
+                  "  if (!err) res.json().forEach(w => {",
+                  "    if (w.customerId in expectBal) {",
+                  "      const before = Number(pm.collectionVariables.get(\"bal_\" + w.customerId));",
+                  "      pm.test(`Số dư ${w.customerId} đúng`, () => pm.expect(w.balance).to.eql(before + expectBal[w.customerId]));",
+                  "    }",
+                  "  });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[KB2] 4. Reservation RELEASED",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{inventoryUrl}}/api/inventory/reservations"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "const id = Number(pm.collectionVariables.get(\"kb2OrderId\"));",
+                  "const r = pm.response.json().find(x => Number(x.orderId) === id);",
+                  "pm.test(\"Reservation tồn tại\", () => pm.expect(r).to.exist);",
+                  "pm.test(\"Reservation = RELEASED\", () => pm.expect(r.status).to.eql(\"RELEASED\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[KB2] 5. Saga logs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{orderUrl}}/api/orders/{{kb2OrderId}}/saga-logs"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "const steps = pm.response.json().map(x => x.step);",
+                  "pm.test(\"Thứ tự bước Saga đúng\", () => pm.expect(steps).to.eql([\"CREATE_ORDER\", \"RESERVE_INVENTORY\", \"SAGA\", \"COMPENSATION\", \"CANCEL_ORDER\"]));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "KB3 - Hết hàng (409)",
+      "item": [
+        {
+          "name": "[KB3] 1. Snapshot kho & ví",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{inventoryUrl}}/api/inventory/products"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.response.json().forEach(p => pm.collectionVariables.set(\"stock_\" + p.id, p.stock));",
+                  "pm.sendRequest(pm.collectionVariables.get(\"paymentUrl\") + \"/api/payments/wallets\", (err, res) => {",
+                  "  pm.test(\"Đọc được số dư ví\", () => pm.expect(err).to.be.null);",
+                  "  if (!err) res.json().forEach(w => pm.collectionVariables.set(\"bal_\" + w.customerId, w.balance));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[KB3] 2. Đặt hàng",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{orderUrl}}/api/orders",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"C1\",\n  \"productId\": \"P2\",\n  \"quantity\": 100,\n  \"amount\": 2000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "const o = pm.response.json();",
+                  "pm.collectionVariables.set(\"kb3OrderId\", o.id);",
+                  "pm.test(\"Order status = CANCELLED\", () => pm.expect(o.status).to.eql(\"CANCELLED\"));",
+                  "pm.test(\"Saga status = COMPENSATED\", () => pm.expect(o.sagaStatus).to.eql(\"COMPENSATED\"));",
+                  "pm.test(\"failureReason đúng\", () => pm.expect(o.failureReason).to.match(/^409/));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[KB3] 3. Kiểm tra kho & ví",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{inventoryUrl}}/api/inventory/products"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "const expectStock = {\"P2\": 0};",
+                  "const expectBal = {\"C1\": 0};",
+                  "pm.response.json().forEach(p => {",
+                  "  if (p.id in expectStock) {",
+                  "    const before = Number(pm.collectionVariables.get(\"stock_\" + p.id));",
+                  "    pm.test(`Tồn kho ${p.id} đúng`, () => pm.expect(p.stock).to.eql(before + expectStock[p.id]));",
+                  "  }",
+                  "});",
+                  "pm.sendRequest(pm.collectionVariables.get(\"paymentUrl\") + \"/api/payments/wallets\", (err, res) => {",
+                  "  pm.test(\"Đọc được số dư ví\", () => pm.expect(err).to.be.null);",
+                  "  if (!err) res.json().forEach(w => {",
+                  "    if (w.customerId in expectBal) {",
+                  "      const before = Number(pm.collectionVariables.get(\"bal_\" + w.customerId));",
+                  "      pm.test(`Số dư ${w.customerId} đúng`, () => pm.expect(w.balance).to.eql(before + expectBal[w.customerId]));",
+                  "    }",
+                  "  });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[KB3] 4. Saga logs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{orderUrl}}/api/orders/{{kb3OrderId}}/saga-logs"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "const steps = pm.response.json().map(x => x.step);",
+                  "pm.test(\"Thứ tự bước Saga đúng\", () => pm.expect(steps).to.eql([\"CREATE_ORDER\", \"SAGA\", \"CANCEL_ORDER\"]));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "KB4 - Sản phẩm không tồn tại (404 inventory)",
+      "item": [
+        {
+          "name": "[KB4] 1. Snapshot kho & ví",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{inventoryUrl}}/api/inventory/products"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.response.json().forEach(p => pm.collectionVariables.set(\"stock_\" + p.id, p.stock));",
+                  "pm.sendRequest(pm.collectionVariables.get(\"paymentUrl\") + \"/api/payments/wallets\", (err, res) => {",
+                  "  pm.test(\"Đọc được số dư ví\", () => pm.expect(err).to.be.null);",
+                  "  if (!err) res.json().forEach(w => pm.collectionVariables.set(\"bal_\" + w.customerId, w.balance));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[KB4] 2. Đặt hàng",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{orderUrl}}/api/orders",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"C1\",\n  \"productId\": \"P9\",\n  \"quantity\": 1,\n  \"amount\": 10\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "const o = pm.response.json();",
+                  "pm.collectionVariables.set(\"kb4OrderId\", o.id);",
+                  "pm.test(\"Order status = CANCELLED\", () => pm.expect(o.status).to.eql(\"CANCELLED\"));",
+                  "pm.test(\"Saga status = COMPENSATED\", () => pm.expect(o.sagaStatus).to.eql(\"COMPENSATED\"));",
+                  "pm.test(\"failureReason đúng\", () => pm.expect(o.failureReason).to.match(/^404/));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[KB4] 3. Kiểm tra kho & ví",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{inventoryUrl}}/api/inventory/products"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "const expectStock = {\"P1\": 0, \"P2\": 0};",
+                  "const expectBal = {\"C1\": 0};",
+                  "pm.response.json().forEach(p => {",
+                  "  if (p.id in expectStock) {",
+                  "    const before = Number(pm.collectionVariables.get(\"stock_\" + p.id));",
+                  "    pm.test(`Tồn kho ${p.id} đúng`, () => pm.expect(p.stock).to.eql(before + expectStock[p.id]));",
+                  "  }",
+                  "});",
+                  "pm.sendRequest(pm.collectionVariables.get(\"paymentUrl\") + \"/api/payments/wallets\", (err, res) => {",
+                  "  pm.test(\"Đọc được số dư ví\", () => pm.expect(err).to.be.null);",
+                  "  if (!err) res.json().forEach(w => {",
+                  "    if (w.customerId in expectBal) {",
+                  "      const before = Number(pm.collectionVariables.get(\"bal_\" + w.customerId));",
+                  "      pm.test(`Số dư ${w.customerId} đúng`, () => pm.expect(w.balance).to.eql(before + expectBal[w.customerId]));",
+                  "    }",
+                  "  });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[KB4] 4. Saga logs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{orderUrl}}/api/orders/{{kb4OrderId}}/saga-logs"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "const steps = pm.response.json().map(x => x.step);",
+                  "pm.test(\"Thứ tự bước Saga đúng\", () => pm.expect(steps).to.eql([\"CREATE_ORDER\", \"SAGA\", \"CANCEL_ORDER\"]));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "KB5 - Ví không tồn tại (404 payment)",
+      "item": [
+        {
+          "name": "[KB5] 1. Snapshot kho & ví",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{inventoryUrl}}/api/inventory/products"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.response.json().forEach(p => pm.collectionVariables.set(\"stock_\" + p.id, p.stock));",
+                  "pm.sendRequest(pm.collectionVariables.get(\"paymentUrl\") + \"/api/payments/wallets\", (err, res) => {",
+                  "  pm.test(\"Đọc được số dư ví\", () => pm.expect(err).to.be.null);",
+                  "  if (!err) res.json().forEach(w => pm.collectionVariables.set(\"bal_\" + w.customerId, w.balance));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[KB5] 2. Đặt hàng",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{orderUrl}}/api/orders",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"C9\",\n  \"productId\": \"P2\",\n  \"quantity\": 1,\n  \"amount\": 20\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "const o = pm.response.json();",
+                  "pm.collectionVariables.set(\"kb5OrderId\", o.id);",
+                  "pm.test(\"Order status = CANCELLED\", () => pm.expect(o.status).to.eql(\"CANCELLED\"));",
+                  "pm.test(\"Saga status = COMPENSATED\", () => pm.expect(o.sagaStatus).to.eql(\"COMPENSATED\"));",
+                  "pm.test(\"failureReason đúng\", () => pm.expect(o.failureReason).to.match(/^404/));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[KB5] 3. Kiểm tra kho & ví",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{inventoryUrl}}/api/inventory/products"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "const expectStock = {\"P2\": 0};",
+                  "const expectBal = {};",
+                  "pm.response.json().forEach(p => {",
+                  "  if (p.id in expectStock) {",
+                  "    const before = Number(pm.collectionVariables.get(\"stock_\" + p.id));",
+                  "    pm.test(`Tồn kho ${p.id} đúng`, () => pm.expect(p.stock).to.eql(before + expectStock[p.id]));",
+                  "  }",
+                  "});",
+                  "pm.sendRequest(pm.collectionVariables.get(\"paymentUrl\") + \"/api/payments/wallets\", (err, res) => {",
+                  "  pm.test(\"Đọc được số dư ví\", () => pm.expect(err).to.be.null);",
+                  "  if (!err) res.json().forEach(w => {",
+                  "    if (w.customerId in expectBal) {",
+                  "      const before = Number(pm.collectionVariables.get(\"bal_\" + w.customerId));",
+                  "      pm.test(`Số dư ${w.customerId} đúng`, () => pm.expect(w.balance).to.eql(before + expectBal[w.customerId]));",
+                  "    }",
+                  "  });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[KB5] 4. Saga logs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{orderUrl}}/api/orders/{{kb5OrderId}}/saga-logs"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "const steps = pm.response.json().map(x => x.step);",
+                  "pm.test(\"Thứ tự bước Saga đúng\", () => pm.expect(steps).to.eql([\"CREATE_ORDER\", \"RESERVE_INVENTORY\", \"SAGA\", \"COMPENSATION\", \"CANCEL_ORDER\"]));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "KB7 - Idempotent",
+      "item": [
+        {
+          "name": "[KB7] 1. Snapshot kho & ví",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{inventoryUrl}}/api/inventory/products"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.response.json().forEach(p => pm.collectionVariables.set(\"stock_\" + p.id, p.stock));",
+                  "pm.sendRequest(pm.collectionVariables.get(\"paymentUrl\") + \"/api/payments/wallets\", (err, res) => {",
+                  "  pm.test(\"Đọc được số dư ví\", () => pm.expect(err).to.be.null);",
+                  "  if (!err) res.json().forEach(w => pm.collectionVariables.set(\"bal_\" + w.customerId, w.balance));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[KB7] 2. Release KB2 lần 1",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{inventoryUrl}}/api/inventory/release/{{kb2OrderId}}"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[KB7] 3. Release KB2 lần 2",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{inventoryUrl}}/api/inventory/release/{{kb2OrderId}}"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[KB7] 4. Reserve lại KB1",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{inventoryUrl}}/api/inventory/reserve",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{kb1OrderId}}\",\n  \"productId\": \"P1\",\n  \"quantity\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Reservation vẫn RESERVED\", () => pm.expect(pm.response.json().status).to.eql(\"RESERVED\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[KB7] 5. Pay lại KB1",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{paymentUrl}}/api/payments/pay",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{kb1OrderId}}\",\n  \"customerId\": \"C1\",\n  \"amount\": 2000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Payment vẫn PAID\", () => pm.expect(pm.response.json().status).to.eql(\"PAID\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[KB7] 6. Refund order chưa từng pay",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{paymentUrl}}/api/payments/refund/{{kb2OrderId}}"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[KB7] 7. Kiểm tra kho & ví không đổi",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{inventoryUrl}}/api/inventory/products"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "const expectStock = {\"P1\": 0, \"P2\": 0};",
+                  "const expectBal = {\"C1\": 0, \"C2\": 0};",
+                  "pm.response.json().forEach(p => {",
+                  "  if (p.id in expectStock) {",
+                  "    const before = Number(pm.collectionVariables.get(\"stock_\" + p.id));",
+                  "    pm.test(`Tồn kho ${p.id} đúng`, () => pm.expect(p.stock).to.eql(before + expectStock[p.id]));",
+                  "  }",
+                  "});",
+                  "pm.sendRequest(pm.collectionVariables.get(\"paymentUrl\") + \"/api/payments/wallets\", (err, res) => {",
+                  "  pm.test(\"Đọc được số dư ví\", () => pm.expect(err).to.be.null);",
+                  "  if (!err) res.json().forEach(w => {",
+                  "    if (w.customerId in expectBal) {",
+                  "      const before = Number(pm.collectionVariables.get(\"bal_\" + w.customerId));",
+                  "      pm.test(`Số dư ${w.customerId} đúng`, () => pm.expect(w.balance).to.eql(before + expectBal[w.customerId]));",
+                  "    }",
+                  "  });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Thủ công (không chạy bằng Runner)",
+      "item": [
+        {
+          "name": "KB6 - payment-service bị tắt",
+          "item": [
+            {
+              "name": "[KB6] 1. Snapshot",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{inventoryUrl}}/api/inventory/products"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "pm.response.json().forEach(p => pm.collectionVariables.set(\"stock_\" + p.id, p.stock));",
+                      "pm.sendRequest(pm.collectionVariables.get(\"paymentUrl\") + \"/api/payments/wallets\", (err, res) => {",
+                      "  pm.test(\"Đọc được số dư ví\", () => pm.expect(err).to.be.null);",
+                      "  if (!err) res.json().forEach(w => pm.collectionVariables.set(\"bal_\" + w.customerId, w.balance));",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "[KB6] 2. Đặt hàng (tắt payment-service trước)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{orderUrl}}/api/orders",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"customerId\": \"C1\",\n  \"productId\": \"P2\",\n  \"quantity\": 1,\n  \"amount\": 20\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "const o = pm.response.json();",
+                      "pm.collectionVariables.set(\"kb6OrderId\", o.id);",
+                      "pm.test(\"Order = CANCELLED\", () => pm.expect(o.status).to.eql(\"CANCELLED\"));",
+                      "pm.test(\"Saga = COMPENSATED\", () => pm.expect(o.sagaStatus).to.eql(\"COMPENSATED\"));",
+                      "pm.test(\"Network failure\", () => pm.expect(o.failureReason).to.match(/^Service không phản hồi/));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "[KB6] 3. Kiểm tra",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{inventoryUrl}}/api/inventory/products"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "const expectStock = {\"P2\": 0};",
+                      "const expectBal = {\"C1\": 0};",
+                      "pm.response.json().forEach(p => {",
+                      "  if (p.id in expectStock) {",
+                      "    const before = Number(pm.collectionVariables.get(\"stock_\" + p.id));",
+                      "    pm.test(`Tồn kho ${p.id} đúng`, () => pm.expect(p.stock).to.eql(before + expectStock[p.id]));",
+                      "  }",
+                      "});",
+                      "pm.sendRequest(pm.collectionVariables.get(\"paymentUrl\") + \"/api/payments/wallets\", (err, res) => {",
+                      "  pm.test(\"Đọc được số dư ví\", () => pm.expect(err).to.be.null);",
+                      "  if (!err) res.json().forEach(w => {",
+                      "    if (w.customerId in expectBal) {",
+                      "      const before = Number(pm.collectionVariables.get(\"bal_\" + w.customerId));",
+                      "      pm.test(`Số dư ${w.customerId} đúng`, () => pm.expect(w.balance).to.eql(before + expectBal[w.customerId]));",
+                      "    }",
+                      "  });",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "[KB6] 4. Saga logs",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{orderUrl}}/api/orders/{{kb6OrderId}}/saga-logs"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "const steps = pm.response.json().map(x => x.step);",
+                      "pm.test(\"Thứ tự bước Saga đúng\", () => pm.expect(steps).to.eql([\"CREATE_ORDER\", \"RESERVE_INVENTORY\", \"SAGA\", \"COMPENSATION\", \"CANCEL_ORDER\"]));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "KB8 - Compensation cũng lỗi (tuỳ chọn)",
+          "item": [
+            {
+              "name": "[KB8] 2. Đặt hàng",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{orderUrl}}/api/orders",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"customerId\": \"C1\",\n  \"productId\": \"P2\",\n  \"quantity\": 1,\n  \"amount\": 20\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "const o = pm.response.json();",
+                      "pm.collectionVariables.set(\"kb8OrderId\", o.id);"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
