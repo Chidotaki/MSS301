@@ -30,5 +30,6 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private SagaStatus sagaStatus;
 
-    private String failureReason;
+    @Column(length = 2000)
+private String failureReason;
 }
