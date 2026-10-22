@@ -57,12 +57,56 @@ services:
           "mongosh",
           "--quiet",
           "--eval",
-          "try { rs.status() } catch (e) { rs.initiate({_id: 'rs0', members: [{_id: 0, host: 'localhost:27017'}]}) }; quit(db.hello().isWritablePrimary ? 0 : 1)"
+          "try { rs.status() } catch (e) { rs.initiate({_id: 'rs0', members: [{_id: 0, host: 'mongodb:27017'}]}) }; quit(db.hello().isWritablePrimary ? 0 : 1)"
         ]
       interval: 5s
       timeout: 10s
       retries: 30
       start_period: 10s
+
+  inventory-service:
+    build: ./inventory-service
+    container_name: inventory-service
+    ports:
+      - "8082:8082"
+    environment:
+      MONGO_URI: mongodb://mongodb:27017/inventorydb?replicaSet=rs0&directConnection=true
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  payment-service:
+    build: ./payment-service
+    container_name: payment-service
+    ports:
+      - "8083:8083"
+    environment:
+      DB_URL: jdbc:sqlserver://sqlserver:1433;databaseName=paymentdb;encrypt=true;trustServerCertificate=true
+      DB_USER: sa
+      DB_PASSWORD: Saga@12345
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  order-service:
+    build: ./order-service
+    container_name: order-service
+    ports:
+      - "8081:8081"
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/orderdb?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
+      DB_USER: root
+      DB_PASSWORD: root
+      INVENTORY_URL: http://inventory-service:8082
+      PAYMENT_URL: http://payment-service:8083
+      PAYMENT_DELAY_MS: ${PAYMENT_DELAY_MS:-0}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      inventory-service:
+        condition: service_started
+      payment-service:
+        condition: service_started
 
 volumes:
   mysql-data:
