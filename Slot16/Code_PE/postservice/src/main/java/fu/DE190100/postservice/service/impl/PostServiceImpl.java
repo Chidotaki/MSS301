@@ -46,7 +46,7 @@ public class PostServiceImpl implements PostService {
     public ApiResponse createPost(PostDTO dto) {
 
         // 1. Validate date
-        if (!dto.getEndDate().after(dto.getStartDate())) {
+        if (!toLocalDate(dto.getEndDate()).isAfter(toLocalDate(dto.getStartDate()))) {
             return ApiResponse.error(
                     2,
                     "endDate must be after startDate"
@@ -141,7 +141,7 @@ public class PostServiceImpl implements PostService {
                         ? dto.getEndDate()
                         : post.getEndDate();
 
-        if (!effectiveEnd.after(effectiveStart)) {
+        if (!toLocalDate(effectiveEnd).isAfter(toLocalDate(effectiveStart))) {
             return ApiResponse.error(
                     2,
                     "endDate must be after startDate"
@@ -332,6 +332,9 @@ public class PostServiceImpl implements PostService {
     }
 
     private java.time.LocalDate toLocalDate(Date date) {
+        if (date instanceof java.sql.Date sqlDate) {
+            return sqlDate.toLocalDate();
+        }
         return date
                 .toInstant()
                 .atZone(ZoneId.systemDefault())
