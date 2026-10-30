@@ -1,0 +1,2271 @@
+{
+  "ids": {
+    "userId": 4,
+    "postId": 1,
+    "rateUserId": 5,
+    "ratePostId": 2
+  },
+  "results": [
+    {
+      "name": "User Swagger UI",
+      "pass": true,
+      "evidence": {
+        "http": 200,
+        "body": {
+          "html": true
+        }
+      }
+    },
+    {
+      "name": "User Swagger HTML",
+      "pass": true,
+      "evidence": {
+        "html": true
+      }
+    },
+    {
+      "name": "User OpenAPI document",
+      "pass": true,
+      "evidence": {
+        "http": 200,
+        "body": {
+          "openapi": "3.1.0",
+          "info": {
+            "title": "User Service API",
+            "description": "MSS301 2026 Spring PE - User Service (Spring Boot 4.1.0)",
+            "version": "1.0.0"
+          },
+          "servers": [
+            {
+              "url": "http://localhost:8081",
+              "description": "Generated server url"
+            }
+          ],
+          "paths": {
+            "/api/users/{userId}": {
+              "get": {
+                "tags": [
+                  "de-190100-user-controller"
+                ],
+                "operationId": "getDetail",
+                "parameters": [
+                  {
+                    "name": "userId",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                      "type": "integer",
+                      "format": "int64"
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "OK",
+                    "content": {
+                      "*/*": {
+                        "schema": {
+                          "$ref": "#/components/schemas/ApiResponse"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "put": {
+                "tags": [
+                  "de-190100-user-controller"
+                ],
+                "operationId": "update",
+                "parameters": [
+                  {
+                    "name": "userId",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                      "type": "integer",
+                      "format": "int64"
+                    }
+                  }
+                ],
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/UserDTO"
+                      }
+                    }
+                  },
+                  "required": true
+                },
+                "responses": {
+                  "200": {
+                    "description": "OK",
+                    "content": {
+                      "*/*": {
+                        "schema": {
+                          "$ref": "#/components/schemas/ApiResponse"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "delete": {
+                "tags": [
+                  "de-190100-user-controller"
+                ],
+                "operationId": "deactivate",
+                "parameters": [
+                  {
+                    "name": "userId",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                      "type": "integer",
+                      "format": "int64"
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "OK",
+                    "content": {
+                      "*/*": {
+                        "schema": {
+                          "$ref": "#/components/schemas/ApiResponse"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/api/users": {
+              "get": {
+                "tags": [
+                  "de-190100-user-controller"
+                ],
+                "operationId": "list",
+                "parameters": [
+                  {
+                    "name": "page",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                      "type": "integer",
+                      "format": "int32",
+                      "default": 0
+                    }
+                  },
+                  {
+                    "name": "size",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                      "type": "integer",
+                      "format": "int32",
+                      "default": 10
+                    }
+                  },
+                  {
+                    "name": "role",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "name": "status",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "OK",
+                    "content": {
+                      "*/*": {
+                        "schema": {
+                          "$ref": "#/components/schemas/ApiResponse"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "post": {
+                "tags": [
+                  "de-190100-user-controller"
+                ],
+                "operationId": "create",
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/UserDTO"
+                      }
+                    }
+                  },
+                  "required": true
+                },
+                "responses": {
+                  "200": {
+                    "description": "OK",
+                    "content": {
+                      "*/*": {
+                        "schema": {
+                          "$ref": "#/components/schemas/ApiResponse"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "components": {
+            "schemas": {
+              "UserDTO": {
+                "type": "object",
+                "properties": {
+                  "userId": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "username": {
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 0
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "maxLength": 100,
+                    "minLength": 0
+                  },
+                  "role": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "USER|CREATOR|ADMIN"
+                  },
+                  "ratePerPost": {
+                    "type": "number",
+                    "minimum": 0.0
+                  },
+                  "maxDailyPosts": {
+                    "type": "integer",
+                    "format": "int32",
+                    "maximum": 10,
+                    "minimum": 1
+                  },
+                  "level": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 1
+                  },
+                  "status": {
+                    "type": "string",
+                    "pattern": "ACTIVE|SUSPENDED|DEACTIVATED"
+                  }
+                },
+                "required": [
+                  "email",
+                  "level",
+                  "maxDailyPosts",
+                  "ratePerPost",
+                  "role",
+                  "username"
+                ]
+              },
+              "ApiResponse": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "data": {},
+                  "timestamp": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "User five endpoint mappings",
+      "pass": true,
+      "evidence": [
+        "/api/users/{userId}",
+        "/api/users"
+      ]
+    },
+    {
+      "name": "Post Swagger UI",
+      "pass": true,
+      "evidence": {
+        "http": 200,
+        "body": {
+          "html": true
+        }
+      }
+    },
+    {
+      "name": "Post Swagger HTML",
+      "pass": true,
+      "evidence": {
+        "html": true
+      }
+    },
+    {
+      "name": "Post OpenAPI document",
+      "pass": true,
+      "evidence": {
+        "http": 200,
+        "body": {
+          "openapi": "3.1.0",
+          "info": {
+            "title": "Post Service API",
+            "description": "MSS301 2026 Spring PE - Post Service (Spring Boot 4.1.0)",
+            "version": "1.0.0"
+          },
+          "servers": [
+            {
+              "url": "http://localhost:8082",
+              "description": "Generated server url"
+            }
+          ],
+          "paths": {
+            "/api/posts/{postId}": {
+              "get": {
+                "tags": [
+                  "de-190100-post-controller"
+                ],
+                "operationId": "getById",
+                "parameters": [
+                  {
+                    "name": "postId",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                      "type": "integer",
+                      "format": "int64"
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "OK",
+                    "content": {
+                      "*/*": {
+                        "schema": {
+                          "$ref": "#/components/schemas/ApiResponse"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "put": {
+                "tags": [
+                  "de-190100-post-controller"
+                ],
+                "operationId": "update",
+                "parameters": [
+                  {
+                    "name": "postId",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                      "type": "integer",
+                      "format": "int64"
+                    }
+                  }
+                ],
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/PostDTO"
+                      }
+                    }
+                  },
+                  "required": true
+                },
+                "responses": {
+                  "200": {
+                    "description": "OK",
+                    "content": {
+                      "*/*": {
+                        "schema": {
+                          "$ref": "#/components/schemas/ApiResponse"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "delete": {
+                "tags": [
+                  "de-190100-post-controller"
+                ],
+                "operationId": "cancel",
+                "parameters": [
+                  {
+                    "name": "postId",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                      "type": "integer",
+                      "format": "int64"
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "OK",
+                    "content": {
+                      "*/*": {
+                        "schema": {
+                          "$ref": "#/components/schemas/ApiResponse"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/api/posts": {
+              "get": {
+                "tags": [
+                  "de-190100-post-controller"
+                ],
+                "operationId": "list",
+                "parameters": [
+                  {
+                    "name": "page",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                      "type": "integer",
+                      "format": "int32",
+                      "default": 0
+                    }
+                  },
+                  {
+                    "name": "size",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                      "type": "integer",
+                      "format": "int32",
+                      "default": 10
+                    }
+                  },
+                  {
+                    "name": "advertiserName",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "name": "status",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "OK",
+                    "content": {
+                      "*/*": {
+                        "schema": {
+                          "$ref": "#/components/schemas/ApiResponse"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "post": {
+                "tags": [
+                  "de-190100-post-controller"
+                ],
+                "operationId": "create",
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/PostDTO"
+                      }
+                    }
+                  },
+                  "required": true
+                },
+                "responses": {
+                  "200": {
+                    "description": "OK",
+                    "content": {
+                      "*/*": {
+                        "schema": {
+                          "$ref": "#/components/schemas/ApiResponse"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "components": {
+            "schemas": {
+              "PostDTO": {
+                "type": "object",
+                "properties": {
+                  "postId": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "advertiserName": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 0
+                  },
+                  "advertiserEmail": {
+                    "type": "string",
+                    "format": "email",
+                    "maxLength": 100,
+                    "minLength": 0
+                  },
+                  "advertiserPhone": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 0
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "numberOfPosts": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 1
+                  },
+                  "totalCost": {
+                    "type": "number"
+                  },
+                  "status": {
+                    "type": "string",
+                    "pattern": "DRAFT|SCHEDULED|PUBLISHED|CANCELLED"
+                  },
+                  "userId": {
+                    "type": "integer",
+                    "format": "int64"
+                  }
+                },
+                "required": [
+                  "advertiserEmail",
+                  "advertiserName",
+                  "advertiserPhone",
+                  "endDate",
+                  "numberOfPosts",
+                  "startDate",
+                  "userId"
+                ]
+              },
+              "ApiResponse": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "data": {},
+                  "timestamp": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Post five endpoint mappings",
+      "pass": true,
+      "evidence": [
+        "/api/posts/{postId}",
+        "/api/posts"
+      ]
+    },
+    {
+      "name": "User create",
+      "pass": true,
+      "evidence": {
+        "http": 201,
+        "body": {
+          "status": 1,
+          "message": "User created successfully",
+          "data": {
+            "email": "pe_9f00c4792c@example.com",
+            "level": 1,
+            "maxDailyPosts": 3,
+            "ratePerPost": 500000,
+            "role": "CREATOR",
+            "status": "ACTIVE",
+            "userId": 4,
+            "username": "pe_9f00c4792c"
+          },
+          "timestamp": "2026-10-29T09:08:52Z"
+        }
+      }
+    },
+    {
+      "name": "User default ACTIVE",
+      "pass": true,
+      "evidence": {
+        "status": 1,
+        "message": "User created successfully",
+        "data": {
+          "email": "pe_9f00c4792c@example.com",
+          "level": 1,
+          "maxDailyPosts": 3,
+          "ratePerPost": 500000,
+          "role": "CREATOR",
+          "status": "ACTIVE",
+          "userId": 4,
+          "username": "pe_9f00c4792c"
+        },
+        "timestamp": "2026-10-29T09:08:52Z"
+      }
+    },
+    {
+      "name": "User duplicate username",
+      "pass": true,
+      "evidence": {
+        "http": 226,
+        "body": {
+          "status": 3,
+          "message": "Username is duplicated",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:52Z"
+        }
+      }
+    },
+    {
+      "name": "User validation maxDailyPosts",
+      "pass": true,
+      "evidence": {
+        "http": 406,
+        "body": {
+          "status": 2,
+          "message": "maxDailyPosts must be <= 10",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:52Z"
+        }
+      }
+    },
+    {
+      "name": "User validation ratePerPost",
+      "pass": true,
+      "evidence": {
+        "http": 406,
+        "body": {
+          "status": 2,
+          "message": "ratePerPost must be > 0",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:52Z"
+        }
+      }
+    },
+    {
+      "name": "User validation email",
+      "pass": true,
+      "evidence": {
+        "http": 406,
+        "body": {
+          "status": 2,
+          "message": "Email is invalid",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:52Z"
+        }
+      }
+    },
+    {
+      "name": "User validation role",
+      "pass": true,
+      "evidence": {
+        "http": 406,
+        "body": {
+          "status": 2,
+          "message": "Role must be USER, CREATOR, or ADMIN",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:52Z"
+        }
+      }
+    },
+    {
+      "name": "User get detail",
+      "pass": true,
+      "evidence": {
+        "http": 200,
+        "body": {
+          "status": 1,
+          "message": "Successful",
+          "data": {
+            "email": "pe_9f00c4792c@example.com",
+            "level": 1,
+            "maxDailyPosts": 3,
+            "ratePerPost": 500000.0,
+            "role": "CREATOR",
+            "status": "ACTIVE",
+            "userId": 4,
+            "username": "pe_9f00c4792c"
+          },
+          "timestamp": "2026-10-29T09:08:52Z"
+        }
+      }
+    },
+    {
+      "name": "User detail fields",
+      "pass": true,
+      "evidence": {
+        "status": 1,
+        "message": "Successful",
+        "data": {
+          "email": "pe_9f00c4792c@example.com",
+          "level": 1,
+          "maxDailyPosts": 3,
+          "ratePerPost": 500000.0,
+          "role": "CREATOR",
+          "status": "ACTIVE",
+          "userId": 4,
+          "username": "pe_9f00c4792c"
+        },
+        "timestamp": "2026-10-29T09:08:52Z"
+      }
+    },
+    {
+      "name": "User missing detail",
+      "pass": true,
+      "evidence": {
+        "http": 404,
+        "body": {
+          "status": 4,
+          "message": "User is not found",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:52Z"
+        }
+      }
+    },
+    {
+      "name": "User update",
+      "pass": true,
+      "evidence": {
+        "http": 200,
+        "body": {
+          "status": 1,
+          "message": "User updated successfully",
+          "data": {
+            "email": "pe_9f00c4792c@example.com",
+            "level": 2,
+            "maxDailyPosts": 3,
+            "ratePerPost": 500000,
+            "role": "CREATOR",
+            "status": "ACTIVE",
+            "userId": 4,
+            "username": "pe_9f00c4792c"
+          },
+          "timestamp": "2026-10-29T09:08:52Z"
+        }
+      }
+    },
+    {
+      "name": "User missing update",
+      "pass": true,
+      "evidence": {
+        "http": 404,
+        "body": {
+          "status": 4,
+          "message": "User is not found",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:52Z"
+        }
+      }
+    },
+    {
+      "name": "User filter",
+      "pass": true,
+      "evidence": {
+        "http": 200,
+        "body": {
+          "status": 1,
+          "message": "Successful",
+          "data": {
+            "size": 10,
+            "page": 0,
+            "totalPages": 1,
+            "totalElements": 3,
+            "first": true,
+            "last": true,
+            "content": [
+              {
+                "email": "a@example.com",
+                "level": 1,
+                "maxDailyPosts": 3,
+                "ratePerPost": 500000.0,
+                "role": "CREATOR",
+                "status": "ACTIVE",
+                "userId": 1,
+                "username": "creator_a"
+              },
+              {
+                "email": "b@example.com",
+                "level": 1,
+                "maxDailyPosts": 1,
+                "ratePerPost": 300000.0,
+                "role": "CREATOR",
+                "status": "ACTIVE",
+                "userId": 2,
+                "username": "creator_b"
+              },
+              {
+                "email": "pe_9f00c4792c@example.com",
+                "level": 2,
+                "maxDailyPosts": 3,
+                "ratePerPost": 500000.0,
+                "role": "CREATOR",
+                "status": "ACTIVE",
+                "userId": 4,
+                "username": "pe_9f00c4792c"
+              }
+            ]
+          },
+          "timestamp": "2026-10-29T09:08:52Z"
+        }
+      }
+    },
+    {
+      "name": "User filter content and pagination",
+      "pass": true,
+      "evidence": {
+        "size": 10,
+        "page": 0,
+        "totalPages": 1,
+        "totalElements": 3,
+        "first": true,
+        "last": true,
+        "content": [
+          {
+            "email": "a@example.com",
+            "level": 1,
+            "maxDailyPosts": 3,
+            "ratePerPost": 500000.0,
+            "role": "CREATOR",
+            "status": "ACTIVE",
+            "userId": 1,
+            "username": "creator_a"
+          },
+          {
+            "email": "b@example.com",
+            "level": 1,
+            "maxDailyPosts": 1,
+            "ratePerPost": 300000.0,
+            "role": "CREATOR",
+            "status": "ACTIVE",
+            "userId": 2,
+            "username": "creator_b"
+          },
+          {
+            "email": "pe_9f00c4792c@example.com",
+            "level": 2,
+            "maxDailyPosts": 3,
+            "ratePerPost": 500000.0,
+            "role": "CREATOR",
+            "status": "ACTIVE",
+            "userId": 4,
+            "username": "pe_9f00c4792c"
+          }
+        ]
+      }
+    },
+    {
+      "name": "User oversized page",
+      "pass": true,
+      "evidence": {
+        "http": 406,
+        "body": {
+          "status": 2,
+          "message": "size must be between 1 and 100",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:52Z"
+        }
+      }
+    },
+    {
+      "name": "User deactivate",
+      "pass": true,
+      "evidence": {
+        "http": 200,
+        "body": {
+          "status": 1,
+          "message": "User is set to DEACTIVATED successfully",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:52Z"
+        }
+      }
+    },
+    {
+      "name": "User get after deactivate",
+      "pass": true,
+      "evidence": {
+        "http": 200,
+        "body": {
+          "status": 1,
+          "message": "Successful",
+          "data": {
+            "email": "pe_9f00c4792c@example.com",
+            "level": 2,
+            "maxDailyPosts": 3,
+            "ratePerPost": 500000.0,
+            "role": "CREATOR",
+            "status": "DEACTIVATED",
+            "userId": 4,
+            "username": "pe_9f00c4792c"
+          },
+          "timestamp": "2026-10-29T09:08:52Z"
+        }
+      }
+    },
+    {
+      "name": "User row retained as DEACTIVATED",
+      "pass": true,
+      "evidence": {
+        "status": 1,
+        "message": "Successful",
+        "data": {
+          "email": "pe_9f00c4792c@example.com",
+          "level": 2,
+          "maxDailyPosts": 3,
+          "ratePerPost": 500000.0,
+          "role": "CREATOR",
+          "status": "DEACTIVATED",
+          "userId": 4,
+          "username": "pe_9f00c4792c"
+        },
+        "timestamp": "2026-10-29T09:08:52Z"
+      }
+    },
+    {
+      "name": "User missing deactivate",
+      "pass": true,
+      "evidence": {
+        "http": 404,
+        "body": {
+          "status": 4,
+          "message": "User is not found",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "ACTIVE seed user",
+      "pass": true,
+      "evidence": {
+        "http": 200,
+        "body": {
+          "status": 1,
+          "message": "Successful",
+          "data": {
+            "email": "a@example.com",
+            "level": 1,
+            "maxDailyPosts": 3,
+            "ratePerPost": 500000.0,
+            "role": "CREATOR",
+            "status": "ACTIVE",
+            "userId": 1,
+            "username": "creator_a"
+          },
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "ACTIVE seed configuration",
+      "pass": true,
+      "evidence": {
+        "email": "a@example.com",
+        "level": 1,
+        "maxDailyPosts": 3,
+        "ratePerPost": 500000.0,
+        "role": "CREATOR",
+        "status": "ACTIVE",
+        "userId": 1,
+        "username": "creator_a"
+      }
+    },
+    {
+      "name": "Post create ACTIVE user",
+      "pass": true,
+      "evidence": {
+        "http": 201,
+        "body": {
+          "status": 1,
+          "message": "Post campaign created successfully",
+          "data": {
+            "advertiserEmail": "ads@example.com",
+            "advertiserName": "Shop ABC",
+            "advertiserPhone": "0900000000",
+            "endDate": "28/07/2026",
+            "numberOfPosts": 2,
+            "postId": 1,
+            "startDate": "25/07/2026",
+            "status": "SCHEDULED",
+            "totalCost": 1500000.0,
+            "userId": 1
+          },
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post default SCHEDULED and totalCost 1500000",
+      "pass": true,
+      "evidence": {
+        "status": 1,
+        "message": "Post campaign created successfully",
+        "data": {
+          "advertiserEmail": "ads@example.com",
+          "advertiserName": "Shop ABC",
+          "advertiserPhone": "0900000000",
+          "endDate": "28/07/2026",
+          "numberOfPosts": 2,
+          "postId": 1,
+          "startDate": "25/07/2026",
+          "status": "SCHEDULED",
+          "totalCost": 1500000.0,
+          "userId": 1
+        },
+        "timestamp": "2026-10-29T09:08:53Z"
+      }
+    },
+    {
+      "name": "Post invalid date 25/07/2026",
+      "pass": true,
+      "evidence": {
+        "http": 406,
+        "body": {
+          "status": 2,
+          "message": "endDate must be after startDate",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post date message 25/07/2026",
+      "pass": true,
+      "evidence": {
+        "status": 2,
+        "message": "endDate must be after startDate",
+        "data": null,
+        "timestamp": "2026-10-29T09:08:53Z"
+      }
+    },
+    {
+      "name": "Post invalid date 24/07/2026",
+      "pass": true,
+      "evidence": {
+        "http": 406,
+        "body": {
+          "status": 2,
+          "message": "endDate must be after startDate",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post date message 24/07/2026",
+      "pass": true,
+      "evidence": {
+        "status": 2,
+        "message": "endDate must be after startDate",
+        "data": null,
+        "timestamp": "2026-10-29T09:08:53Z"
+      }
+    },
+    {
+      "name": "Post missing user",
+      "pass": true,
+      "evidence": {
+        "http": 404,
+        "body": {
+          "status": 4,
+          "message": "User ID is not found",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post suspended user",
+      "pass": true,
+      "evidence": {
+        "http": 400,
+        "body": {
+          "status": 5,
+          "message": "User is not ACTIVE for posting",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post suspended message",
+      "pass": true,
+      "evidence": {
+        "status": 5,
+        "message": "User is not ACTIVE for posting",
+        "data": null,
+        "timestamp": "2026-10-29T09:08:53Z"
+      }
+    },
+    {
+      "name": "Post maxDailyPosts",
+      "pass": true,
+      "evidence": {
+        "http": 406,
+        "body": {
+          "status": 2,
+          "message": "numberOfPosts must not exceed user's maxDailyPosts",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post maxDailyPosts message",
+      "pass": true,
+      "evidence": {
+        "status": 2,
+        "message": "numberOfPosts must not exceed user's maxDailyPosts",
+        "data": null,
+        "timestamp": "2026-10-29T09:08:53Z"
+      }
+    },
+    {
+      "name": "Post deactivated user",
+      "pass": true,
+      "evidence": {
+        "http": 400,
+        "body": {
+          "status": 5,
+          "message": "User is not ACTIVE for posting",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post validation advertiserEmail",
+      "pass": true,
+      "evidence": {
+        "http": 406,
+        "body": {
+          "status": 2,
+          "message": "advertiserEmail is invalid",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post validation numberOfPosts",
+      "pass": true,
+      "evidence": {
+        "http": 406,
+        "body": {
+          "status": 2,
+          "message": "numberOfPosts must be >= 1",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post detail",
+      "pass": true,
+      "evidence": {
+        "http": 200,
+        "body": {
+          "status": 1,
+          "message": "Successful",
+          "data": {
+            "advertiserEmail": "ads@example.com",
+            "advertiserName": "Shop ABC",
+            "advertiserPhone": "0900000000",
+            "endDate": "27/07/2026",
+            "numberOfPosts": 2,
+            "postId": 1,
+            "startDate": "24/07/2026",
+            "status": "SCHEDULED",
+            "totalCost": 1500000.0,
+            "user": {
+              "email": "a@example.com",
+              "level": 1,
+              "maxDailyPosts": 3,
+              "ratePerPost": 500000.0,
+              "role": "CREATOR",
+              "status": "ACTIVE",
+              "userId": 1,
+              "username": "creator_a"
+            }
+          },
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post full embedded user via Feign",
+      "pass": true,
+      "evidence": {
+        "status": 1,
+        "message": "Successful",
+        "data": {
+          "advertiserEmail": "ads@example.com",
+          "advertiserName": "Shop ABC",
+          "advertiserPhone": "0900000000",
+          "endDate": "27/07/2026",
+          "numberOfPosts": 2,
+          "postId": 1,
+          "startDate": "24/07/2026",
+          "status": "SCHEDULED",
+          "totalCost": 1500000.0,
+          "user": {
+            "email": "a@example.com",
+            "level": 1,
+            "maxDailyPosts": 3,
+            "ratePerPost": 500000.0,
+            "role": "CREATOR",
+            "status": "ACTIVE",
+            "userId": 1,
+            "username": "creator_a"
+          }
+        },
+        "timestamp": "2026-10-29T09:08:53Z"
+      }
+    },
+    {
+      "name": "Post missing detail",
+      "pass": true,
+      "evidence": {
+        "http": 404,
+        "body": {
+          "status": 4,
+          "message": "Post is not found",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post full update",
+      "pass": true,
+      "evidence": {
+        "http": 200,
+        "body": {
+          "status": 1,
+          "message": "Post campaign updated successfully",
+          "data": {
+            "advertiserEmail": "a@example.com",
+            "advertiserName": "Nguyen Van A",
+            "advertiserPhone": "0901234567",
+            "endDate": "27/07/2026",
+            "numberOfPosts": 3,
+            "postId": 1,
+            "startDate": "25/07/2026",
+            "status": "SCHEDULED",
+            "totalCost": 1000000.0,
+            "userId": 1
+          },
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post recalculated totalCost 1000000",
+      "pass": true,
+      "evidence": {
+        "status": 1,
+        "message": "Post campaign updated successfully",
+        "data": {
+          "advertiserEmail": "a@example.com",
+          "advertiserName": "Nguyen Van A",
+          "advertiserPhone": "0901234567",
+          "endDate": "27/07/2026",
+          "numberOfPosts": 3,
+          "postId": 1,
+          "startDate": "25/07/2026",
+          "status": "SCHEDULED",
+          "totalCost": 1000000.0,
+          "userId": 1
+        },
+        "timestamp": "2026-10-29T09:08:53Z"
+      }
+    },
+    {
+      "name": "Post partial update",
+      "pass": false,
+      "evidence": {
+        "http": 500,
+        "body": {
+          "status": 0,
+          "message": "Internal server error: null",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post partial preserves dates and cost",
+      "pass": false,
+      "evidence": {
+        "status": 0,
+        "message": "Internal server error: null",
+        "data": null,
+        "timestamp": "2026-10-29T09:08:53Z"
+      }
+    },
+    {
+      "name": "Post missing update",
+      "pass": true,
+      "evidence": {
+        "http": 404,
+        "body": {
+          "status": 4,
+          "message": "Post Id is not found",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post snapshot before rejected update",
+      "pass": true,
+      "evidence": {
+        "http": 200,
+        "body": {
+          "status": 1,
+          "message": "Successful",
+          "data": {
+            "advertiserEmail": "a@example.com",
+            "advertiserName": "Nguyen Van A",
+            "advertiserPhone": "0901234567",
+            "endDate": "26/07/2026",
+            "numberOfPosts": 3,
+            "postId": 1,
+            "startDate": "24/07/2026",
+            "status": "SCHEDULED",
+            "totalCost": 1000000.0,
+            "user": {
+              "email": "a@example.com",
+              "level": 1,
+              "maxDailyPosts": 3,
+              "ratePerPost": 500000.0,
+              "role": "CREATOR",
+              "status": "ACTIVE",
+              "userId": 1,
+              "username": "creator_a"
+            }
+          },
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post rejected update {'endDate': '25/07/2026', 'advertiserName': 'MUST NOT PERSIST'}",
+      "pass": false,
+      "evidence": {
+        "http": 500,
+        "body": {
+          "status": 0,
+          "message": "Internal server error: null",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post rejected update date message",
+      "pass": false,
+      "evidence": {
+        "status": 0,
+        "message": "Internal server error: null",
+        "data": null,
+        "timestamp": "2026-10-29T09:08:53Z"
+      }
+    },
+    {
+      "name": "Post read after rejected update",
+      "pass": true,
+      "evidence": {
+        "http": 200,
+        "body": {
+          "status": 1,
+          "message": "Successful",
+          "data": {
+            "advertiserEmail": "a@example.com",
+            "advertiserName": "Nguyen Van A",
+            "advertiserPhone": "0901234567",
+            "endDate": "26/07/2026",
+            "numberOfPosts": 3,
+            "postId": 1,
+            "startDate": "24/07/2026",
+            "status": "SCHEDULED",
+            "totalCost": 1000000.0,
+            "user": {
+              "email": "a@example.com",
+              "level": 1,
+              "maxDailyPosts": 3,
+              "ratePerPost": 500000.0,
+              "role": "CREATOR",
+              "status": "ACTIVE",
+              "userId": 1,
+              "username": "creator_a"
+            }
+          },
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post rejected update does not dirty-flush",
+      "pass": true,
+      "evidence": {
+        "before": {
+          "advertiserEmail": "a@example.com",
+          "advertiserName": "Nguyen Van A",
+          "advertiserPhone": "0901234567",
+          "endDate": "26/07/2026",
+          "numberOfPosts": 3,
+          "postId": 1,
+          "startDate": "24/07/2026",
+          "status": "SCHEDULED",
+          "totalCost": 1000000.0,
+          "user": {
+            "email": "a@example.com",
+            "level": 1,
+            "maxDailyPosts": 3,
+            "ratePerPost": 500000.0,
+            "role": "CREATOR",
+            "status": "ACTIVE",
+            "userId": 1,
+            "username": "creator_a"
+          }
+        },
+        "after": {
+          "advertiserEmail": "a@example.com",
+          "advertiserName": "Nguyen Van A",
+          "advertiserPhone": "0901234567",
+          "endDate": "26/07/2026",
+          "numberOfPosts": 3,
+          "postId": 1,
+          "startDate": "24/07/2026",
+          "status": "SCHEDULED",
+          "totalCost": 1000000.0,
+          "user": {
+            "email": "a@example.com",
+            "level": 1,
+            "maxDailyPosts": 3,
+            "ratePerPost": 500000.0,
+            "role": "CREATOR",
+            "status": "ACTIVE",
+            "userId": 1,
+            "username": "creator_a"
+          }
+        }
+      }
+    },
+    {
+      "name": "Post rejected update {'startDate': '29/07/2026'}",
+      "pass": true,
+      "evidence": {
+        "http": 406,
+        "body": {
+          "status": 2,
+          "message": "endDate must be after startDate",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post rejected update date message",
+      "pass": true,
+      "evidence": {
+        "status": 2,
+        "message": "endDate must be after startDate",
+        "data": null,
+        "timestamp": "2026-10-29T09:08:53Z"
+      }
+    },
+    {
+      "name": "Post read after rejected update",
+      "pass": true,
+      "evidence": {
+        "http": 200,
+        "body": {
+          "status": 1,
+          "message": "Successful",
+          "data": {
+            "advertiserEmail": "a@example.com",
+            "advertiserName": "Nguyen Van A",
+            "advertiserPhone": "0901234567",
+            "endDate": "26/07/2026",
+            "numberOfPosts": 3,
+            "postId": 1,
+            "startDate": "24/07/2026",
+            "status": "SCHEDULED",
+            "totalCost": 1000000.0,
+            "user": {
+              "email": "a@example.com",
+              "level": 1,
+              "maxDailyPosts": 3,
+              "ratePerPost": 500000.0,
+              "role": "CREATOR",
+              "status": "ACTIVE",
+              "userId": 1,
+              "username": "creator_a"
+            }
+          },
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post rejected update does not dirty-flush",
+      "pass": true,
+      "evidence": {
+        "before": {
+          "advertiserEmail": "a@example.com",
+          "advertiserName": "Nguyen Van A",
+          "advertiserPhone": "0901234567",
+          "endDate": "26/07/2026",
+          "numberOfPosts": 3,
+          "postId": 1,
+          "startDate": "24/07/2026",
+          "status": "SCHEDULED",
+          "totalCost": 1000000.0,
+          "user": {
+            "email": "a@example.com",
+            "level": 1,
+            "maxDailyPosts": 3,
+            "ratePerPost": 500000.0,
+            "role": "CREATOR",
+            "status": "ACTIVE",
+            "userId": 1,
+            "username": "creator_a"
+          }
+        },
+        "after": {
+          "advertiserEmail": "a@example.com",
+          "advertiserName": "Nguyen Van A",
+          "advertiserPhone": "0901234567",
+          "endDate": "26/07/2026",
+          "numberOfPosts": 3,
+          "postId": 1,
+          "startDate": "24/07/2026",
+          "status": "SCHEDULED",
+          "totalCost": 1000000.0,
+          "user": {
+            "email": "a@example.com",
+            "level": 1,
+            "maxDailyPosts": 3,
+            "ratePerPost": 500000.0,
+            "role": "CREATOR",
+            "status": "ACTIVE",
+            "userId": 1,
+            "username": "creator_a"
+          }
+        }
+      }
+    },
+    {
+      "name": "Post rejected update {'startDate': '28/07/2026', 'endDate': '27/07/2026'}",
+      "pass": true,
+      "evidence": {
+        "http": 406,
+        "body": {
+          "status": 2,
+          "message": "endDate must be after startDate",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post rejected update date message",
+      "pass": true,
+      "evidence": {
+        "status": 2,
+        "message": "endDate must be after startDate",
+        "data": null,
+        "timestamp": "2026-10-29T09:08:53Z"
+      }
+    },
+    {
+      "name": "Post read after rejected update",
+      "pass": true,
+      "evidence": {
+        "http": 200,
+        "body": {
+          "status": 1,
+          "message": "Successful",
+          "data": {
+            "advertiserEmail": "a@example.com",
+            "advertiserName": "Nguyen Van A",
+            "advertiserPhone": "0901234567",
+            "endDate": "26/07/2026",
+            "numberOfPosts": 3,
+            "postId": 1,
+            "startDate": "24/07/2026",
+            "status": "SCHEDULED",
+            "totalCost": 1000000.0,
+            "user": {
+              "email": "a@example.com",
+              "level": 1,
+              "maxDailyPosts": 3,
+              "ratePerPost": 500000.0,
+              "role": "CREATOR",
+              "status": "ACTIVE",
+              "userId": 1,
+              "username": "creator_a"
+            }
+          },
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post rejected update does not dirty-flush",
+      "pass": true,
+      "evidence": {
+        "before": {
+          "advertiserEmail": "a@example.com",
+          "advertiserName": "Nguyen Van A",
+          "advertiserPhone": "0901234567",
+          "endDate": "26/07/2026",
+          "numberOfPosts": 3,
+          "postId": 1,
+          "startDate": "24/07/2026",
+          "status": "SCHEDULED",
+          "totalCost": 1000000.0,
+          "user": {
+            "email": "a@example.com",
+            "level": 1,
+            "maxDailyPosts": 3,
+            "ratePerPost": 500000.0,
+            "role": "CREATOR",
+            "status": "ACTIVE",
+            "userId": 1,
+            "username": "creator_a"
+          }
+        },
+        "after": {
+          "advertiserEmail": "a@example.com",
+          "advertiserName": "Nguyen Van A",
+          "advertiserPhone": "0901234567",
+          "endDate": "26/07/2026",
+          "numberOfPosts": 3,
+          "postId": 1,
+          "startDate": "24/07/2026",
+          "status": "SCHEDULED",
+          "totalCost": 1000000.0,
+          "user": {
+            "email": "a@example.com",
+            "level": 1,
+            "maxDailyPosts": 3,
+            "ratePerPost": 500000.0,
+            "role": "CREATOR",
+            "status": "ACTIVE",
+            "userId": 1,
+            "username": "creator_a"
+          }
+        }
+      }
+    },
+    {
+      "name": "Rate test user create",
+      "pass": true,
+      "evidence": {
+        "http": 201,
+        "body": {
+          "status": 1,
+          "message": "User created successfully",
+          "data": {
+            "email": "rate_9f00c4792c@example.com",
+            "level": 2,
+            "maxDailyPosts": 3,
+            "ratePerPost": 500000,
+            "role": "CREATOR",
+            "status": "ACTIVE",
+            "userId": 5,
+            "username": "rate_9f00c4792c"
+          },
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Rate test post create",
+      "pass": true,
+      "evidence": {
+        "http": 201,
+        "body": {
+          "status": 1,
+          "message": "Post campaign created successfully",
+          "data": {
+            "advertiserEmail": "ads@example.com",
+            "advertiserName": "Shop ABC",
+            "advertiserPhone": "0900000000",
+            "endDate": "28/07/2026",
+            "numberOfPosts": 2,
+            "postId": 2,
+            "startDate": "25/07/2026",
+            "status": "SCHEDULED",
+            "totalCost": 1500000.0,
+            "userId": 5
+          },
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Change current UserService rate",
+      "pass": true,
+      "evidence": {
+        "http": 200,
+        "body": {
+          "status": 1,
+          "message": "User updated successfully",
+          "data": {
+            "email": "rate_9f00c4792c@example.com",
+            "level": 2,
+            "maxDailyPosts": 3,
+            "ratePerPost": 600000,
+            "role": "CREATOR",
+            "status": "ACTIVE",
+            "userId": 5,
+            "username": "rate_9f00c4792c"
+          },
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post update reads changed remote rate",
+      "pass": false,
+      "evidence": {
+        "http": 500,
+        "body": {
+          "status": 0,
+          "message": "Internal server error: null",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post current rate totalCost 1200000",
+      "pass": false,
+      "evidence": {
+        "status": 0,
+        "message": "Internal server error: null",
+        "data": null,
+        "timestamp": "2026-10-29T09:08:53Z"
+      }
+    },
+    {
+      "name": "Rate test post cancel",
+      "pass": true,
+      "evidence": {
+        "http": 200,
+        "body": {
+          "status": 1,
+          "message": "Post campaign is cancelled successfully",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Rate test user deactivate",
+      "pass": true,
+      "evidence": {
+        "http": 200,
+        "body": {
+          "status": 1,
+          "message": "User is set to DEACTIVATED successfully",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post cancel",
+      "pass": true,
+      "evidence": {
+        "http": 200,
+        "body": {
+          "status": 1,
+          "message": "Post campaign is cancelled successfully",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post cancel data null",
+      "pass": true,
+      "evidence": {
+        "status": 1,
+        "message": "Post campaign is cancelled successfully",
+        "data": null,
+        "timestamp": "2026-10-29T09:08:53Z"
+      }
+    },
+    {
+      "name": "Post get after cancel",
+      "pass": true,
+      "evidence": {
+        "http": 200,
+        "body": {
+          "status": 1,
+          "message": "Successful",
+          "data": {
+            "advertiserEmail": "a@example.com",
+            "advertiserName": "Nguyen Van A",
+            "advertiserPhone": "0901234567",
+            "endDate": "26/07/2026",
+            "numberOfPosts": 3,
+            "postId": 1,
+            "startDate": "24/07/2026",
+            "status": "CANCELLED",
+            "totalCost": 1000000.0,
+            "user": {
+              "email": "a@example.com",
+              "level": 1,
+              "maxDailyPosts": 3,
+              "ratePerPost": 500000.0,
+              "role": "CREATOR",
+              "status": "ACTIVE",
+              "userId": 1,
+              "username": "creator_a"
+            }
+          },
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post row retained as CANCELLED",
+      "pass": true,
+      "evidence": {
+        "status": 1,
+        "message": "Successful",
+        "data": {
+          "advertiserEmail": "a@example.com",
+          "advertiserName": "Nguyen Van A",
+          "advertiserPhone": "0901234567",
+          "endDate": "26/07/2026",
+          "numberOfPosts": 3,
+          "postId": 1,
+          "startDate": "24/07/2026",
+          "status": "CANCELLED",
+          "totalCost": 1000000.0,
+          "user": {
+            "email": "a@example.com",
+            "level": 1,
+            "maxDailyPosts": 3,
+            "ratePerPost": 500000.0,
+            "role": "CREATOR",
+            "status": "ACTIVE",
+            "userId": 1,
+            "username": "creator_a"
+          }
+        },
+        "timestamp": "2026-10-29T09:08:53Z"
+      }
+    },
+    {
+      "name": "Post missing cancel",
+      "pass": true,
+      "evidence": {
+        "http": 404,
+        "body": {
+          "status": 4,
+          "message": "Post is not found",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post list page=0&size=10",
+      "pass": true,
+      "evidence": {
+        "http": 200,
+        "body": {
+          "status": 1,
+          "message": "Successful",
+          "data": {
+            "size": 10,
+            "page": 0,
+            "totalPages": 1,
+            "totalElements": 2,
+            "first": true,
+            "last": true,
+            "content": [
+              {
+                "advertiserEmail": "a@example.com",
+                "advertiserName": "Nguyen Van A",
+                "advertiserPhone": "0901234567",
+                "endDate": "26/07/2026",
+                "numberOfPosts": 3,
+                "postId": 1,
+                "startDate": "24/07/2026",
+                "status": "CANCELLED",
+                "totalCost": 1000000.0,
+                "user": {
+                  "email": "a@example.com",
+                  "level": 1,
+                  "maxDailyPosts": 3,
+                  "ratePerPost": 500000.0,
+                  "role": "CREATOR",
+                  "status": "ACTIVE",
+                  "userId": 1,
+                  "username": "creator_a"
+                }
+              },
+              {
+                "advertiserEmail": "ads@example.com",
+                "advertiserName": "Shop ABC",
+                "advertiserPhone": "0900000000",
+                "endDate": "27/07/2026",
+                "numberOfPosts": 2,
+                "postId": 2,
+                "startDate": "24/07/2026",
+                "status": "CANCELLED",
+                "totalCost": 1500000.0,
+                "user": {
+                  "email": "rate_9f00c4792c@example.com",
+                  "level": 2,
+                  "maxDailyPosts": 3,
+                  "ratePerPost": 600000.0,
+                  "role": "CREATOR",
+                  "status": "DEACTIVATED",
+                  "userId": 5,
+                  "username": "rate_9f00c4792c"
+                }
+              }
+            ]
+          },
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post pagination and embedded users page=0&size=10",
+      "pass": true,
+      "evidence": {
+        "size": 10,
+        "page": 0,
+        "totalPages": 1,
+        "totalElements": 2,
+        "first": true,
+        "last": true,
+        "content": [
+          {
+            "advertiserEmail": "a@example.com",
+            "advertiserName": "Nguyen Van A",
+            "advertiserPhone": "0901234567",
+            "endDate": "26/07/2026",
+            "numberOfPosts": 3,
+            "postId": 1,
+            "startDate": "24/07/2026",
+            "status": "CANCELLED",
+            "totalCost": 1000000.0,
+            "user": {
+              "email": "a@example.com",
+              "level": 1,
+              "maxDailyPosts": 3,
+              "ratePerPost": 500000.0,
+              "role": "CREATOR",
+              "status": "ACTIVE",
+              "userId": 1,
+              "username": "creator_a"
+            }
+          },
+          {
+            "advertiserEmail": "ads@example.com",
+            "advertiserName": "Shop ABC",
+            "advertiserPhone": "0900000000",
+            "endDate": "27/07/2026",
+            "numberOfPosts": 2,
+            "postId": 2,
+            "startDate": "24/07/2026",
+            "status": "CANCELLED",
+            "totalCost": 1500000.0,
+            "user": {
+              "email": "rate_9f00c4792c@example.com",
+              "level": 2,
+              "maxDailyPosts": 3,
+              "ratePerPost": 600000.0,
+              "role": "CREATOR",
+              "status": "DEACTIVATED",
+              "userId": 5,
+              "username": "rate_9f00c4792c"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Post list advertiserName=Shop",
+      "pass": true,
+      "evidence": {
+        "http": 200,
+        "body": {
+          "status": 1,
+          "message": "Successful",
+          "data": {
+            "size": 10,
+            "page": 0,
+            "totalPages": 1,
+            "totalElements": 1,
+            "first": true,
+            "last": true,
+            "content": [
+              {
+                "advertiserEmail": "ads@example.com",
+                "advertiserName": "Shop ABC",
+                "advertiserPhone": "0900000000",
+                "endDate": "27/07/2026",
+                "numberOfPosts": 2,
+                "postId": 2,
+                "startDate": "24/07/2026",
+                "status": "CANCELLED",
+                "totalCost": 1500000.0,
+                "user": {
+                  "email": "rate_9f00c4792c@example.com",
+                  "level": 2,
+                  "maxDailyPosts": 3,
+                  "ratePerPost": 600000.0,
+                  "role": "CREATOR",
+                  "status": "DEACTIVATED",
+                  "userId": 5,
+                  "username": "rate_9f00c4792c"
+                }
+              }
+            ]
+          },
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post pagination and embedded users advertiserName=Shop",
+      "pass": true,
+      "evidence": {
+        "size": 10,
+        "page": 0,
+        "totalPages": 1,
+        "totalElements": 1,
+        "first": true,
+        "last": true,
+        "content": [
+          {
+            "advertiserEmail": "ads@example.com",
+            "advertiserName": "Shop ABC",
+            "advertiserPhone": "0900000000",
+            "endDate": "27/07/2026",
+            "numberOfPosts": 2,
+            "postId": 2,
+            "startDate": "24/07/2026",
+            "status": "CANCELLED",
+            "totalCost": 1500000.0,
+            "user": {
+              "email": "rate_9f00c4792c@example.com",
+              "level": 2,
+              "maxDailyPosts": 3,
+              "ratePerPost": 600000.0,
+              "role": "CREATOR",
+              "status": "DEACTIVATED",
+              "userId": 5,
+              "username": "rate_9f00c4792c"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Post list status=CANCELLED",
+      "pass": true,
+      "evidence": {
+        "http": 200,
+        "body": {
+          "status": 1,
+          "message": "Successful",
+          "data": {
+            "size": 10,
+            "page": 0,
+            "totalPages": 1,
+            "totalElements": 2,
+            "first": true,
+            "last": true,
+            "content": [
+              {
+                "advertiserEmail": "a@example.com",
+                "advertiserName": "Nguyen Van A",
+                "advertiserPhone": "0901234567",
+                "endDate": "26/07/2026",
+                "numberOfPosts": 3,
+                "postId": 1,
+                "startDate": "24/07/2026",
+                "status": "CANCELLED",
+                "totalCost": 1000000.0,
+                "user": {
+                  "email": "a@example.com",
+                  "level": 1,
+                  "maxDailyPosts": 3,
+                  "ratePerPost": 500000.0,
+                  "role": "CREATOR",
+                  "status": "ACTIVE",
+                  "userId": 1,
+                  "username": "creator_a"
+                }
+              },
+              {
+                "advertiserEmail": "ads@example.com",
+                "advertiserName": "Shop ABC",
+                "advertiserPhone": "0900000000",
+                "endDate": "27/07/2026",
+                "numberOfPosts": 2,
+                "postId": 2,
+                "startDate": "24/07/2026",
+                "status": "CANCELLED",
+                "totalCost": 1500000.0,
+                "user": {
+                  "email": "rate_9f00c4792c@example.com",
+                  "level": 2,
+                  "maxDailyPosts": 3,
+                  "ratePerPost": 600000.0,
+                  "role": "CREATOR",
+                  "status": "DEACTIVATED",
+                  "userId": 5,
+                  "username": "rate_9f00c4792c"
+                }
+              }
+            ]
+          },
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    },
+    {
+      "name": "Post pagination and embedded users status=CANCELLED",
+      "pass": true,
+      "evidence": {
+        "size": 10,
+        "page": 0,
+        "totalPages": 1,
+        "totalElements": 2,
+        "first": true,
+        "last": true,
+        "content": [
+          {
+            "advertiserEmail": "a@example.com",
+            "advertiserName": "Nguyen Van A",
+            "advertiserPhone": "0901234567",
+            "endDate": "26/07/2026",
+            "numberOfPosts": 3,
+            "postId": 1,
+            "startDate": "24/07/2026",
+            "status": "CANCELLED",
+            "totalCost": 1000000.0,
+            "user": {
+              "email": "a@example.com",
+              "level": 1,
+              "maxDailyPosts": 3,
+              "ratePerPost": 500000.0,
+              "role": "CREATOR",
+              "status": "ACTIVE",
+              "userId": 1,
+              "username": "creator_a"
+            }
+          },
+          {
+            "advertiserEmail": "ads@example.com",
+            "advertiserName": "Shop ABC",
+            "advertiserPhone": "0900000000",
+            "endDate": "27/07/2026",
+            "numberOfPosts": 2,
+            "postId": 2,
+            "startDate": "24/07/2026",
+            "status": "CANCELLED",
+            "totalCost": 1500000.0,
+            "user": {
+              "email": "rate_9f00c4792c@example.com",
+              "level": 2,
+              "maxDailyPosts": 3,
+              "ratePerPost": 600000.0,
+              "role": "CREATOR",
+              "status": "DEACTIVATED",
+              "userId": 5,
+              "username": "rate_9f00c4792c"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Post oversized page",
+      "pass": true,
+      "evidence": {
+        "http": 406,
+        "body": {
+          "status": 2,
+          "message": "size must be between 1 and 100",
+          "data": null,
+          "timestamp": "2026-10-29T09:08:53Z"
+        }
+      }
+    }
+  ]
+}
