@@ -13,48 +13,24 @@ public class Room {
     @Column(name = "room_id")
     private Long roomId;
 
-    @Column(
-            name = "room_number",
-            nullable = false,
-            unique = true,
-            length = 20
-    )
+    @Column(name = "room_number", nullable = false, unique = true, length = 20)
     private String roomNumber;
 
     @Enumerated(EnumType.STRING)
-    @Column(
-            name = "room_type",
-            nullable = false,
-            length = 10
-    )
+    @Column(name = "room_type", nullable = false, length = 10)
     private RoomType roomType;
 
-    @Column(
-            name = "price_per_night",
-            nullable = false,
-            precision = 18,
-            scale = 2
-    )
+    @Column(name = "price_per_night", nullable = false, precision = 18, scale = 2)
     private BigDecimal pricePerNight;
 
-    @Column(
-            name = "capacity",
-            nullable = false
-    )
+    @Column(name = "capacity", nullable = false)
     private Integer capacity;
 
-    @Column(
-            name = "floor",
-            nullable = false
-    )
+    @Column(name = "floor", nullable = false)
     private Integer floor;
 
     @Enumerated(EnumType.STRING)
-    @Column(
-            name = "status",
-            nullable = false,
-            length = 15
-    )
+    @Column(name = "status", nullable = false, length = 15)
     private RoomStatus status;
 
     public Room() {
