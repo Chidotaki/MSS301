@@ -8,7 +8,7 @@ spring:
   datasource:
     url: jdbc:sqlserver://${DB_HOST:localhost}:${DB_PORT:1433};databaseName=DBAccount;encrypt=true;trustServerCertificate=true
     username: sa
-    password: ${DB_PASSWORD:YourStrong@Password123}
+    password: ${DB_PASSWORD}
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
   jpa:
@@ -20,6 +20,6 @@ spring:
     show-sql: true
 
 jwt:
-  secret: ${JWT_SECRET:mss301-watch-management-secret-key-2025-very-long-string}
+  secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION:900000}
   refresh-expiration: ${REFRESH_EXPIRATION:604800000}
