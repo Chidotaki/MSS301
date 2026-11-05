@@ -17,8 +17,28 @@ spring:
       ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    show-sql: true
+    show-sql: false
+
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connect-timeout: 2000
+            read-timeout: 5000
+
+brand-service:
+  url: ${BRAND_SERVICE_URL:http://localhost:8082}
+
+saga:
+  fault-injection:
+    enabled: ${SAGA_FAULT_INJECTION:true}
+
+  compensation:
+    max-attempts: 3
+    backoff-ms: 1000
 
 logging:
   level:
-    com.mss301.watch: INFO
+    com.mss301.watch.service.saga: INFO
+    com.mss301.watch.client: DEBUG
