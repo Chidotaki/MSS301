@@ -4,15 +4,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
-// [TODO-6.7]
 @SpringBootApplication
 @EnableFeignClients
-public class MSWatchApplication {
+public class MsWatchApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(
-                MSWatchApplication.class,
-                args
-        );
+        SpringApplication.run(MsWatchApplication.class, args);
     }
 }
