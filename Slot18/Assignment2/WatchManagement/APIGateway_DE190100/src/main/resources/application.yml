@@ -53,7 +53,7 @@ spring:
                     fallbackUri: forward:/fallback/watch
 
 jwt:
-  secret: ${JWT_SECRET:mss301-watch-management-secret-key-2025-very-long-string}
+  secret: ${JWT_SECRET}
 
 resilience4j:
 
